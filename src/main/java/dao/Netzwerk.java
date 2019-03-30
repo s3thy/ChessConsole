@@ -4,40 +4,62 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class Netzwerk {
 
     public void sendeAnServer(JSONObject jd) {
 
+        int port = 1337;
+        Socket socket = null;
+
         System.out.println("Daten werden geschickt...");
 
-        // nur ein Test
-        System.out.println("Inhalt der JSON:");
-        leseJSON(jd);
-
-        // hier sollte die JSON an der Server geschickt werden
-/*
         try {
-            Socket socket = new Socket(InetAddress.getLocalHost(), 1337);
-            System.out.println(socket.getLocalSocketAddress() + ":" + socket.getLocalPort());
-
-            System.out.println("Enter lines of text then Ctrl+D or Ctrl+C to quit");
-            Scanner scanner = new Scanner(System.in);
-            Scanner in = new Scanner(socket.getInputStream());
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            while (scanner.hasNextLine()) {
-                out.println(scanner.nextLine());
-                System.out.println(in.nextLine());
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+            socket = new Socket("localhost", port);
+            startSocketHandler(socket, jd);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            assert socket != null;
+            closeSocket(socket);
         }
-*/
+    }
+
+    private static void startSocketHandler(Socket socket, JSONObject jd) {
+
+        try {
+            OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+
+            // String text = reader.readLine();
+            // JSONObject jsonObject = new JSONObject();
+            // jsonObject.put("message", "Hello World!");
+
+            // writer.write(jsonObject.toString() + "\n");
+            writer.write(jd.toString() + "\n");
+            writer.flush();
+
+            String s = reader.readLine();
+            JSONObject jsonObject = new JSONObject(s);
+
+            System.out.println("Received from server: \n" + jsonObject.toString(2));
+
+        } catch (IOException e) {
+            System.err.println(e);
+        } finally {
+            assert socket != null;
+            closeSocket(socket);
+        }
+    }
+
+    private static void closeSocket(Socket socket) {
+        try {
+
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // nur ein Test
