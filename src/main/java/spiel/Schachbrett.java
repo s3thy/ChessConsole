@@ -1,6 +1,5 @@
 package spiel;
 
-import dao.Datenformat;
 import dao.Netzwerk;
 import figuren.*;
 import org.json.JSONObject;
@@ -9,32 +8,28 @@ import java.util.HashMap;
 
 public class Schachbrett {
 
-    private int[][] feld;
+    private int m_Y, m_X;
     private HashMap<Position, Spielfigur> feldInhalt;
 
     public Schachbrett(int x, int y) {
-        int m_Y = y + 1;
-        int m_X = x + 1;
-        feld = new int[m_Y][m_X];
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                feld[i][j] = j;
-            }
-        }
+        m_Y = y + 1;
+        m_X = x + 1;
     }
 
-    public int[][] getFeldGroesse() {
-        return feld;
+    public int getY() {
+        return m_Y;
+    }
+
+    public int getX() {
+        return m_X;
     }
 
     // starte den geilen Scheiss
     public void init(HashMap<Position, Spielfigur> mapBelegung) {
         stelleFigurenAuf(mapBelegung);
-        // macheSpielZug();
     }
 
     // zeichne Spielbrett auf der Konsole
-    // private void stelleFigurenAuf(HashMap<Position, Spielfigur> mapBelegung) {
     private void stelleFigurenAuf(HashMap<Position, Spielfigur> mapBelegung) {
         // erstelle Brett
         feldInhalt = new HashMap<>();
@@ -47,8 +42,8 @@ public class Schachbrett {
         Spielfigur koenigin = new Koenigin();
         Spielfigur koenig = new Koenig();
         // Aufbau des Spielbretts
-        for (int i = 0; i < feld.length - 1; i++) {
-            for (int j = 0; j < feld[j].length - 1; j++) {
+        for (int i = 0; i < getX(); i++) {
+            for (int j = 0; j < getY(); j++) {
                 Position pos;
                 if (i == 1 || i == 6) {
                     pos = new Position(i, j);
@@ -81,79 +76,13 @@ public class Schachbrett {
                 }
             }
         }
-        // return feldInhalt;
     }
-
-    // zeige Schachbrett mit aktueller Belegung
-/*
-    private void zeigeAlleFiguren() {
-        System.out.print("       A      B      C      D      E      F      G      H");
-        System.out.println();
-        for (int i = 0; i < feld.length - 1; i++) {
-            System.out.print("|" + i + "| ");
-            for (int j = 0; j < feld[j].length - 1; j++) {
-                Position pos = new Position(i, j);
-                Spielfigur spf = feldInhalt.get(pos);
-                if (feldIstBelegt(pos)) {
-                    System.out.print("(" + i + "," + j + ")");
-                    spf.nimmtPlatz(pos);
-                    System.out.print(" ");
-                }
-                if (!feldIstBelegt(pos)) {
-                    System.out.print("(" + i + "," + j + ")");
-                    System.out.print("." + " ");
-                }
-            }
-            System.out.println();
-        }
-    }
-*/
-
-/*    // Spieler waehlt Position/Figur und Ziel aus
-    private void macheSpielZug() {
-        while (true) {
-            // zeigeAlleFiguren();
-            Scanner input = new Scanner(System.in);
-            System.out.println("Alte Position auswaehlen");
-            System.out.print("X: ");
-            int altePositionX = input.nextInt();
-            if (altePositionX == 99) return;
-            System.out.print("Y: ");
-            int altePositionY = input.nextInt();
-            if (altePositionY == 99) return;
-            Position altePosition = new Position(altePositionX, altePositionY);
-            if (!feldIstBelegt(altePosition)) {
-                System.out.print("\nWo klickst du hin? Auf Feld " + altePosition.getX() + "," + altePosition.getY() + " steht nix.\n\n");
-                continue;
-            } else {
-                System.out.println("Ausgewaehlt: " + this.getFigurAufFeld(altePosition).getClass().getSimpleName() + " auf " + altePosition.getX() + "," + altePosition.getY());
-            }
-            System.out.println("Neue Position auswaehlen");
-            System.out.print("X: ");
-            int neuePositionX = input.nextInt();
-            if (neuePositionX == 99) return;
-            System.out.print("Y: ");
-            int neuePositionY = input.nextInt();
-            if (neuePositionY == 99) return;
-            Position neuePosition = new Position(neuePositionX, neuePositionY);
-            bewegeFigur(altePosition, neuePosition);
-            senden();
-        }
-    }*/
 
     // schiebe Figur von A nach B
     // public void bewegeFigur(Position alt, Position neu) {
     public HashMap<Position, Spielfigur> bewegeFigur(Spielfigur spf, Position alt, Position neu) {
-        // zeigeAlleFiguren();
-       /* Spielfigur spf = getFigurAufFeld(alt);
-        System.out.print("\n\nBewege Figur von " + alt.getX() + "," + alt.getY() + " nach " + neu.getX() + "," + neu.getY() + "\n");
-        System.out.println("Auf " + alt.getX() + "," + alt.getY() + " steht jetzt " + this.getFigurAufFeld(alt).getClass().getSimpleName());*/
         feldInhalt.remove(alt);
-        // feldInhalt.put(neu, spf);
         feldInhalt.put(neu, spf);
-/*        System.out.println("Auf " + neu.getX() + "," + neu.getY() + " steht jetzt " + this.getFigurAufFeld(neu).getClass().getSimpleName());
-        System.out.println();
-        System.out.println("******************* Naechster Spieler *********************");*/
         return feldInhalt;
     }
 
@@ -164,13 +93,13 @@ public class Schachbrett {
 
     // steht eine Figur auf dem ausgewaehlten Feld?
     public boolean feldIstBelegt(Position p) {
-        return this.getFigurAufFeld(p) != null;
+        return getFigurAufFeld(p) != null;
     }
 
     // Infos in JSON packen
     private JSONObject output(HashMap feldInhalt) {
 
-        JSONObject out = new Datenformat();
+        JSONObject out = new JSONObject();
 
         for (Object o : feldInhalt.keySet()) {
             Position p = (Position) o;

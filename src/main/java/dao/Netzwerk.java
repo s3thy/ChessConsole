@@ -1,6 +1,5 @@
 package dao;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -35,8 +34,8 @@ public class Netzwerk {
             // String text = reader.readLine();
             // JSONObject jsonObject = new JSONObject();
             // jsonObject.put("message", "Hello World!");
-
             // writer.write(jsonObject.toString() + "\n");
+
             writer.write(jd.toString() + "\n");
             writer.flush();
 
@@ -62,10 +61,4 @@ public class Netzwerk {
         }
     }
 
-    // nur ein Test
-    private void leseJSON(JSONObject jsonDatei) {
-
-        System.out.println(jsonDatei.toString());
-
-    }
 }
